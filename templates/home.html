@@ -150,16 +150,8 @@
 
 
     var bounds = "{{op['data']['bounds']|safe}}";
-    var finaldesignJSON = {
-        {
-            op['data']['synthesis'] | safe
-        }
-    };
-    var diagrams = {
-        {
-            op['data']['diagrams'] | safe
-        }
-    };
+    var finaldesignJSON = {{op['data']['synthesis']|safe}};
+    var diagrams = {{op['data']['diagrams']|safe}};
     var latLngs = bounds.split(',');
     var southWest = L.latLng(latLngs[1], latLngs[0]);
     var northEast = L.latLng(latLngs[3], latLngs[2]);
@@ -208,21 +200,9 @@
 
     // load Synthesis
     // load Wordlcoud
-    var wordcloud = {
-        {
-            op['data']['wordfreq'] | safe
-        }
-    };
-    var fuzzyMatches = {
-        {
-            op['data']['fuzzymatches'] | safe
-        }
-    };
-    var systems = {
-        {
-            op['data']['systems'] | safe
-        }
-    };
+    var wordcloud = {{op['data']['wordfreq']|safe}};
+    var fuzzyMatches = {{op['data']['fuzzymatches']|safe}};
+    var systems = {{op['data']['systems']|safe}};
 
     WordCloud(document.getElementById('cloudcanvas'), {
         'list': wordcloud,
