@@ -12,7 +12,7 @@ from shapely.geometry import Polygon, MultiPolygon, MultiLineString
 from shapely import speedups
 import ShapelyHelper
 import random
-import averaged_perceptron_tagger
+# import averaged_perceptron_tagger
 from sklearn.feature_extraction.text import CountVectorizer
 import redis
 
@@ -28,9 +28,9 @@ import nltk
 # import nltk.stem.snowball
 import string
 from collections import OrderedDict
-# nltk.download('stopwords')
-# nltk.download('averaged_perceptron_tagger')
-# nltk.download('wordnet')
+nltk.download('stopwords')
+nltk.download('averaged_perceptron_tagger')
+nltk.download('wordnet')
 
 # Source: http://nbviewer.jupyter.org/urls/gist.github.com/mjbommar/e2a019e346b879c13d3d/raw/74a206c2629d6e661645e18369f05f6c79d15b65/fuzzy-sentence-matching-python.ipynb 
 # class FuzzyMatcher():
@@ -115,7 +115,7 @@ from collections import OrderedDict
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
 import nltk
-# nltk.download('punkt')
+nltk.download('punkt')
 # Source: http://nlpforhackers.io/wordnet-sentence-similarity/
 class SentenceSimilarity():	
 	def __init__(self):
