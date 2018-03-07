@@ -209,10 +209,30 @@
         'color': '#7b8a8a'
     });
 
-    for (var i = finaldesignJSON.features.length - 1; i >= 0; i--) {
-        const curFeat = finaldesignJSON.features[i];
+    for (var i2 = finaldesignJSON.features.length - 1; i2 >= 0; i2--) {
+        const curFeat = finaldesignJSON.features[i2];
         const curFeatProps = curFeat['properties'];
-        $('#diagTable > tbody:last-child').append('<tr><td>' + curFeatProps['diagramid'] + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['sysname'] + '</td><td>' + curFeatProps['start'] + '</td><td>' + curFeatProps['end'] + '</td></tr>');
+        const did = curFeatProps['diagramid'];
+        var srank = "";
+        for (var i1 = diagrams.length - 1; i1 >= 0; i1--) {
+            var cDiagram = diagrams[i1];
+            if (cDiagram.id == did) {
+                desc = cDiagram.worlddescription;
+                var sid = cDiagram.sysid;
+                var tranking = cDiagram.rank;
+                for (var j1 = systems.length - 1; j1 >= 0; j1--) {
+                    var curSys = systems[j1];
+                    if (curSys.id === sid) {
+                        sysname = curSys.sysname;
+                        break;
+                    }
+                }
+                srank = sysname + " " + tranking + " ";
+                break;
+            }
+        }
+
+        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['sysname'] + '</td><td>' + curFeatProps['start'] + '</td><td>' + curFeatProps['end'] + '</td></tr>');
 
 
     }
@@ -277,21 +297,21 @@
         var sysid = "";
         var sysname = "";
         var sysrank = "";
-        for (var i = diagrams.length - 1; i >= 0; i--) {
-            var curDiagram = diagrams[i];
+        for (var i3 = diagrams.length - 1; i3 >= 0; i3--) {
+            var curDiagram = diagrams[i3];
             if (curDiagram.id == diagramid) {
                 desc = curDiagram.worlddescription;
                 var sysid = curDiagram.sysid;
                 var ranking = curDiagram.rank;
-                for (var j = systems.length - 1; j >= 0; j--) {
-                    var curSys = systems[j];
+                for (var j3 = systems.length - 1; j3 >= 0; j3--) {
+                    var curSys = systems[j3];
                     if (curSys.id === sysid) {
                         sysname = curSys.sysname;
                         syscolor = curSys.syscolor;
                         break;
                     }
                 }
-                sysrank = sysname + " " + ranking + " ";
+                sysrank = sysname + " " + ranking + " " + desc;
                 break;
             }
         }
@@ -309,8 +329,10 @@
 
                 graphData.edges.push({
                     "id": diagramid + "-" + curLink,
+                    "label":diagramid + "-" + curLink,
                     "source": diagramid,
                     "target": curLink,
+                    "size":1,
                     'color': '#ccc'
                 });
             }
@@ -318,9 +340,28 @@
     }
 
     s = new sigma({
+         renderers: [
+                {
+                  container: document.getElementById('graphcontainer'),
+                  type: 'canvas' // sigma.renderers.canvas works as well
+                }
+              ],
         graph: graphData,
-        container: 'graphcontainer',
-        labelSize: 'proportional'
+
+        settings: {
+            drawLabels: false,
+        labelSize: 'proportional',
+        defaultEdgeType:'line',
+        enableHovering:true,
+        edgeColor: "default",
+        font:"Open Sans",
+        enableEdgeHovering: true,
+        edgeHoverColor: 'edge',
+        defaultEdgeHoverColor: '#000',
+        edgeHoverSizeRatio: 1,
+        edgeHoverExtremities: true
+        }
     });
+ 
 </script>
 {% endif %} {% endblock %}
