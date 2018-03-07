@@ -120,7 +120,7 @@ class SentenceSimilarity():
 			for sid, sentence in enumerate(self.sentences):
 				# print("Similarity(\"%s\", \"%s\") = %s" % (target_sentence, sentence, sentence_similarity(target_sentence, sentence)))
 				# print("Similarity(\"%s\", \"%s\") = %s" % (sentence, target_sentence, sentence_similarity(sentence, target_sentence)))
-				if ((self.sentence_similarity(target_sentence, sentence) > 0.4 and self.sentence_similarity(sentence, target_sentence) > 0.4)):
+				if ((self.sentence_similarity(target_sentence, sentence) > 0.4 and self.sentence_similarity(sentence, target_sentence) > 0.6)):
 					targetdiagramid = cDictList[sid][0]
 					matchlist.append(targetdiagramid)
 				else:
