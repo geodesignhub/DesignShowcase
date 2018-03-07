@@ -92,7 +92,10 @@ class SentenceSimilarity():
 					count += 1
 					best_score=[0.0]
 
-		score /= count
+		try:
+			score /= count
+		except ZeroDivisionError as ze: 
+			score = 0
 		return score
 
 
