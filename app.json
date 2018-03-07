@@ -1,0 +1,7 @@
+{
+    "name": "Design Showcase",
+    "description": "A plugin to show details about a Design Synthesis and conduct Natural language processsing on the diagram descriptions",
+    "repository": "https://github.com/geodesignhub/DesignShowcase",
+    "keywords": ["geodesign", "machine learning" ,"Natural language processing"]
+
+}

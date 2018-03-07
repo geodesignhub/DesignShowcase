@@ -1,0 +1,13 @@
+Flask>=0.10.1
+Jinja2>=2.8
+MarkupSafe
+Werkzeug>=0.11.4
+geojson>=1.3.1
+gunicorn>=19.6.0
+itsdangerous>=0.24
+requests>=2.9.1
+shapely
+cligj>=0.4
+scikit-learn
+nltk
+redis

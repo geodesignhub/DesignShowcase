@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico')}}">
+
+    <title>Geodesignhub Design Showcase</title>
+    <link rel="canonical" href="https://getbootstrap.com/docs/4.0/examples/jumbotron/">
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dataTables.bootstrap4.min.css') }}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/flatty.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fa/font-awesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/leaflet.css') }}">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-toggleable-md navbar-inverse fixed-top bg-inverse">
+        <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault" aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+        <!-- <a class="navbar-brand" href="#">Navbar</a> -->
+        <!-- <p>&nbsp;</p> -->
+        <!-- <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Link</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#">Disabled</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="http://example.com" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Dropdown</a>
+                    <div class="dropdown-menu" aria-labelledby="dropdown01">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="text" placeholder="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div> -->
+    </nav>
+
+    <!-- Main jumbotron for a primary marketing message or call to action -->
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-3">Design Showcase</h1>
+            <p>This is a plugin that uses <a href="https://www.geodesignhub.com/api/" target="_blank">Geodesign Hub API</a> and advanced machine learning algorithms to showcase key components of your design. This plugin is free and open source and the code
+                for this plugin is located on a <a href="https://github.com/geodesignhub/DesignShowcase">GitHub repository</a>.</p>
+            <!-- <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p> -->
+        </div>
+    </div>
+
+    <div id="drawing"></div>
+    {% block body %}{% endblock %} 
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+
+    <script src="{{ url_for('static', filename='js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/popper.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/svg.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/wordcloud2.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/leaflet.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/leaflet.timeline.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/humane.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.dataTables.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/dataTables.bootstrap4.min.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery.dataTables.rowgroup.min.js') }}"></script>
+    <!-- START SIGMA IMPORTS -->
+<script type="text/javascript" src="{{ url_for('static', filename='js/sigma/sigma.min.js') }}"></script>
+<!-- <script type="text/javascript" src="{{ url_for('static', filename='js/sigma/sigma.require.js') }}"></script> -->
+    {% block footer %} {% endblock %}
+</body>
+
+</html>

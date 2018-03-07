@@ -1,0 +1,271 @@
+h1 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 400; // Corresponds to the Bold 400 style
+}
+
+h2 {
+    font-family: 'Raleway', sans-serif;
+    font-weight: 200; // Corresponds to the Bold 200 style
+}
+
+p {
+    font-family: 'Open Sans', sans-serif;
+}
+
+table {
+    font-family: 'Open Sans', sans-serif;
+}
+
+tr.group,
+tr.group:hover {
+    background-color: #ddd !important;
+}
+
+.leaflet-bottom.leaflet-left {
+    width: 100%;
+}
+
+.leaflet-control-container .leaflet-timeline-controls {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    margin-bottom: 15px;
+}
+
+#canvas-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    position: relative;
+    height: 85%;
+}
+
+#graphcontainer {
+    width: 100%;
+    height: 400px;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.leaflet-control.leaflet-timeline-control .button-container button {
+    position: relative;
+    width: 20%;
+    height: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.canvas {
+    display: block;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#inputmap {
+    height: 380px;
+    border: 1px solid #DCDCDC;
+}
+
+.c-f4a261 {
+    background-color: #f4a261;
+    color: #FFFFFF;
+}
+
+.c-fc6621 {
+    background-color: #fc6621;
+    color: #FFFFFF;
+}
+
+.c-da0a16 {
+    background-color: #da0a16;
+    color: #FFFFFF;
+}
+
+.c-fc1999 {
+    background-color: #fc1999;
+    color: #FFFFFF;
+}
+
+.c-331196 {
+    background-color: #331196;
+    color: #FFFFFF;
+}
+
+.c-071ac8 {
+    background-color: #071ac8;
+    color: #FFFFFF;
+}
+
+.c-1a9bfc {
+    background-color: #1a9bfc;
+    color: #FFFFFF;
+}
+
+.c-18a81b {
+    background-color: #18a81b;
+    color: #FFFFFF;
+}
+
+.c-0a650c {
+    background-color: #0a650c;
+    color: #FFFFFF;
+}
+
+.c-653308 {
+    background-color: #653308;
+    color: #FFFFFF;
+}
+
+.c-986638 {
+    background-color: #986638;
+    color: #FFFFFF;
+}
+
+.c-bbbbbb {
+    background-color: #bbb;
+    color: #FFFFFF;
+}
+
+.c-888888 {
+    background-color: #888;
+    color: #FFFFFF;
+}
+
+.c-444444 {
+    background-color: #444;
+    color: #FFFFFF;
+}
+
+.c-000000 {
+    background-color: #000;
+    color: #FFFFFF;
+}
+
+.c-f4a261 {
+    background-color: #f4a261;
+    color: #FFFFFF;
+}
+
+.c-9cec5b {
+    background-color: #9cec5b;
+    color: #FFFFFF;
+}
+
+.c-50c5b7 {
+    background-color: #50c5b7;
+    color: #FFFFFF;
+}
+
+.c-e76f51 {
+    background-color: #e76f51;
+    color: #FFFFFF;
+}
+
+.c-8d99ae {
+    background-color: #8d99ae;
+    color: #FFFFFF;
+}
+
+.c-6fdb6f {
+    background-color: #6fdb6f;
+    color: #FFFFFF;
+}
+
+.c-d0f4d0 {
+    background-color: #d0f4d0;
+    color: #FFFFFF;
+}
+
+.c-71b8ff {
+    background-color: #71b8ff;
+    color: #FFFFFF;
+}
+
+.c-afd7ff {
+    background-color: #afd7ff;
+    color: #FFFFFF;
+}
+
+.c-808080 {
+    background-color: #808080;
+    color: #FFFFFF;
+}
+
+.c-b2b2b2 {
+    background-color: #b2b2b2;
+    color: #FFFFFF;
+}
+
+.c-598600 {
+    background-color: #598600;
+    color: #FFFFFF;
+}
+
+.c-006600 {
+    background-color: #006600;
+    color: #FFFFFF;
+}
+
+.c-6600cc {
+    background-color: #6600cc;
+    color: #FFFFFF;
+}
+
+.c-9966ff {
+    background-color: #9966ff;
+    color: #FFFFFF;
+}
+
+.c-ff0000 {
+    background-color: #ff0000;
+    color: #FFFFFF;
+}
+
+.c-ff8989 {
+    background-color: #ff8989;
+    color: #FFFFFF;
+}
+
+.c-996633 {
+    background-color: #996633;
+    color: #FFFFFF;
+}
+
+.c-cc9900 {
+    background-color: #cc9900;
+    color: #FFFFFF;
+}
+
+.c-ffcc00 {
+    background-color: #ffcc00;
+    color: #FFFFFF;
+}
+
+.c-fff1b7 {
+    background-color: #fff1b7;
+    color: #FFFFFF;
+}
+
+.c-24496e {
+    background-color: #24496e;
+    color: #FFFFFF;
+}
+
+.c-3b77b3 {
+    background-color: #3b77b3;
+    color: #FFFFFF;
+}
+
+.c-dddddd {
+    background-color: #dddddd;
+    color: #FFFFFF;
+}
+
+.c-f2f2f2 {
+    background-color: #f2f2f2;
+    color: #FFFFFF;
+}
