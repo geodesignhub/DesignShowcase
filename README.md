@@ -14,7 +14,7 @@ Source: [Prof. Ana Clara Moura](http://geoproea.arq.ufmg.br/equipe/prof-ana-clar
 ### Details
 This plugin provides visualization for any design in Geodesignhub as a one-click integration, we use the API to download all the diagrams and then Natural Lanugage toolkit and SK-Learn feature extraction to process the diagram titles and produce the visualizations. 
 
-#### Timeline Visulationization
+#### Timeline Visualization
 
 ![screenshot3](https://i.imgur.com/sl4nQMB.png)
 
