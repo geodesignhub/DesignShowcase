@@ -13,3 +13,4 @@ nltk
 numpy
 scipy
 redis
+rq
