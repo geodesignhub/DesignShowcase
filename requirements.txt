@@ -10,4 +10,6 @@ shapely
 cligj>=0.4
 scikit-learn
 nltk
+numpy
+scipy
 redis
