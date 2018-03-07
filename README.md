@@ -1,5 +1,5 @@
 # Geodesignhub Design Showcase
-This plugin uses the [Geodesignhub API](https://www.geodesignhub.com/api) to download information about a design and analyze it to produce a showcase that shows important information about the design. 
+This plugin uses the [Geodesignhub API](https://www.geodesignhub.com/api) to download information about a design and analyze it to produce a showcase that shows important information that is derived from the design. 
 
 ### Adding your project
 This plugin can be added to your project in the Administration interface or at the time of Geodesignhub project creation. 
