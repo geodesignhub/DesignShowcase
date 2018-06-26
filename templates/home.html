@@ -22,6 +22,7 @@
                     <tr>
                         <th>Diagram</th>
                         <th>Title</th>
+                        <th>Funding</th>
                         <th>System</th>
                         <th>Start date</th>
                         <th>End Date</th>
@@ -31,6 +32,7 @@
                     <tr>
                         <th>Diagram</th>
                         <th>Title</th>
+                        <th>Funding</th>
                         <th>System</th>
                         <th>Start date</th>
                         <th>End Date</th>
@@ -236,7 +238,7 @@
             }
         }
 
-        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['sysname'] + '</td><td>' + curFeatProps['start'] + '</td><td>' + curFeatProps['end'] + '</td></tr>');
+        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + curFeatProps['description'] +'</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td><td>' + curFeatProps['start'] + '</td><td>' + curFeatProps['end'] + '</td></tr>');
 
 
     }
@@ -246,10 +248,10 @@
         },
         "columnDefs": [{
             "visible": false,
-            "targets": 2
+            "targets": 3
         }],
         "order": [
-            [2, 'asc']
+            [3, 'asc']
         ],
         "displayLength": 25,
         "drawCallback": function(settings) {
@@ -259,7 +261,7 @@
             }).nodes();
             var last = null;
 
-            api.column(2, {
+            api.column(3, {
                 page: 'current'
             }).data().each(function(group, i) {
                 if (last !== group) {
