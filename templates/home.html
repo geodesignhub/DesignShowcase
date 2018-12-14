@@ -194,7 +194,14 @@
             return moment(date).format("YYYY-MM-DD");
         }
     });
-    var timeline = L.timeline(finaldesignJSON, {
+    var fcDesign  = {"type":"FeatureCollection","features":[]};
+    for (var i2 = finaldesignJSON.features.length - 1; i2 >= 0; i2--) {
+        var curFeat = finaldesignJSON.features[i2];       
+        var future = new Date(new Date().setFullYear(new Date().getFullYear() + 30)).toISOString().split('T')[0];
+        curFeat['properties']['end'] = future
+        fcDesign.features.push(curFeat)
+    }
+    var timeline = L.timeline(fcDesign, {
 
         onEachFeature: onEachFeature,
         style: miniMapstyleComp,
