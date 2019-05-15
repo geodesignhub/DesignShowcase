@@ -184,31 +184,10 @@
     }).addTo(inputmap);
     inputmap.fitBounds(mb);
 
-    // L.geoJSON(finaldesignJSON, {
-    //     onEachFeature: onEachFeature,
-    //     style: miniMapstyleComp,
-    // }).addTo(inputmap);
-
-    var timelineControl = L.timelineSliderControl({
-        formatOutput: function(date) {
-            return moment(date).format("YYYY-MM-DD");
-        }
-    });
-    var fcDesign  = {"type":"FeatureCollection","features":[]};
-    for (var i2 = finaldesignJSON.features.length - 1; i2 >= 0; i2--) {
-        var curFeat = finaldesignJSON.features[i2];       
-        var future = new Date(new Date().setFullYear(new Date().getFullYear() + 30)).toISOString().split('T')[0];
-        curFeat['properties']['end'] = future
-        fcDesign.features.push(curFeat)
-    }
-    var timeline = L.timeline(fcDesign, {
-
+    L.geoJSON(finaldesignJSON, {
         onEachFeature: onEachFeature,
         style: miniMapstyleComp,
-    });
-    timelineControl.addTo(inputmap);
-    timelineControl.addTimelines(timeline);
-    timeline.addTo(inputmap);
+    }).addTo(inputmap);
 
 
     // load Synthesis
