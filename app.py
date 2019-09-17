@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask, url_for
 from flask import render_template
 from functools import wraps
