@@ -10,13 +10,11 @@ import json
 
 nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
 
 redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
 redis = redis.from_url(redis_url)
 
-# import averaged_perceptron_tagger
 from sklearn.feature_extraction.text import CountVectorizer
 
 class BagofWordsGenerator():
