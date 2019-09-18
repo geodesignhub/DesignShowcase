@@ -7,6 +7,7 @@ from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
 import redis
 import json
+
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('averaged_perceptron_tagger')
@@ -118,8 +119,8 @@ class SentenceSimilarity():
 			target_sentence = t
 
 			for sid, sentence in enumerate(self.sentences):
-				# print("Similarity(\"%s\", \"%s\") = %s" % (target_sentence, sentence, sentence_similarity(target_sentence, sentence)))
-				# print("Similarity(\"%s\", \"%s\") = %s" % (sentence, target_sentence, sentence_similarity(sentence, target_sentence)))
+				# print("Similarity(\"%s\", \"%s\") = %s" % (target_sentence, sentence, self.sentence_similarity(target_sentence, sentence)))
+				# print("Similarity(\"%s\", \"%s\") = %s" % (sentence, target_sentence, self.sentence_similarity(sentence, target_sentence)))
 				if ((self.sentence_similarity(target_sentence, sentence) > 0.4 and self.sentence_similarity(sentence, target_sentence) > 0.6)):
 					targetdiagramid = cDictList[sid][0]
 					matchlist.append(targetdiagramid)
@@ -142,6 +143,7 @@ def createSenteceSimilarity(inputdict):
 	orderedCorpusDict = OrderedDict(sorted(tmpCorpusDict.items(), key=lambda t: t[0]))
 	mySS = SentenceSimilarity()
 	mySS.generateSentences(orderedCorpusDict)
+
 	sentenceSimilarity = mySS.doSentenceSimilarity()
 	
 	redis.set(key, json.dumps(sentenceSimilarity))

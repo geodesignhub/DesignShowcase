@@ -47,7 +47,7 @@ def api_root():
 		r = myAPIHelper.get_synthesis(teamid = int(cteamid), synthesisid = synthesisid)
 		s = myAPIHelper.get_systems()
 		b = myAPIHelper.get_project_bounds()
-		t = myAPIHelper.get_synthesis_timeline(teamid = int(cteamid), synthesisid = synthesisid)
+		
 		d = myAPIHelper.get_diagrams()
 
 		try:
@@ -65,14 +65,6 @@ def api_root():
 			systems = json.loads(s.text)
 		
 		try:
-			assert t.status_code == 200
-		except AssertionError as ae:
-			print("Invalid reponse %s" % ae)
-		else:
-			timeline = json.loads(t.text)
-			timeline = timeline['timeline']
-
-		try:
 			assert d.status_code == 200
 		except AssertionError as ae:
 			print("Invalid reponse %s" % ae)
@@ -84,8 +76,6 @@ def api_root():
 		for f in finalsynthesis['features']:
 			diagramid = f['properties']['diagramid']
 			formattedfeature = f
-			formattedfeature['properties']['start'] = timeline[str(diagramid)]['start'].replace('-','/')
-			formattedfeature['properties']['end'] = (timeline[str(diagramid)]['end']).replace('-','/')
 			formattedfinalsynthesis['features'].append(formattedfeature)
 			myBagofWordsGenerator.addtoCorpus(f['properties']['description'])
 			myBagofWordsGenerator.addtoCorpusDict(f['properties']['diagramid'],f['properties']['description'])

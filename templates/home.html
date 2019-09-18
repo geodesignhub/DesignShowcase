@@ -2,15 +2,6 @@
 <div class="container">
     <!-- Example row of columns -->
     {% if op['status'] == 1 %}
-    <div class="row">
-        <div class="col-md-12">
-            <h2>Design Synthesis</h2>
-            <small>Use the timeline slider or the animation controls to see the evolution of a design</small>
-            <div id="inputmap"></div>
-            <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
-        </div>
-        
-    </div>
     <br>
     <div class="row">
         <div class="col-md-12">
@@ -56,14 +47,28 @@
         </div>
     </div>
     <br>
+    
+    <div class="row">
+        <div class="col-md-6">
+            <h2>Design Synthesis</h2>
+            <small>&nbsp;</small> 
+           
+            <div id="inputmap"></div>
+            <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
+        </div>
+        
+        <div class="col-md-6">
+            <h2>Diagram Connections</h2><small>Click on the edges to highlight them on the map</small>
+            <div id="graphcontainer"></div>
+            
+        </div>        
+    </div>
     <div class="row">
         <div class="col-md-12">
-            <h2>Diagram Connections</h2>
-            <small>The chart below shows a natural language analysis of similarity of diagram titles, if two titles of a diagram are similar they are linked with a edge. This is useful is showing key ideas in the design. If a chart is not loaded, please refresh after a few moments, the server may still be computing. </small>
-            <p>&nbsp;</p>
-            <div id="graphcontainer"></div>
+            <small>The chart above shows a natural language analysis of similarity of diagram titles, if two titles of a diagram are similar they are linked with a edge. If a chart is not loaded, please refresh after a few moments, the server may still be computing. </small>
         </div>
     </div>
+    
     {% else %}
     <p>{{op['message']}} </p>
     {% endif %}
@@ -78,7 +83,7 @@
 <!-- /container -->{% endblock %} {% block footer %} {% if op['status'] == 1 %}
 <script type="text/javascript">
     var svgDrawing = SVG('drawing').size(10, 10);
-
+    
     function miniMapstyleComp(feature) {
         // console.log(feature.properties)
         var curFeature = feature.geometry.type;
@@ -167,16 +172,18 @@
         minZoom: 6,
         maxZoom: 18,
     });
-
+    var map_features_list = [];
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
+        map_features_list.push({'diagram_id':feature.properties.diagramid, 'layer':layer});
         if (feature.properties && feature.properties.description) {
             layer.bindPopup(feature.properties.description);
         }
     }
 
     // FeatureGroup is to store editable layers
-    var designLayer = new L.FeatureGroup();
+    var design_features = L.featureGroup().addTo(inputmap);
+    
 
     var inputbaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
@@ -187,8 +194,7 @@
     L.geoJSON(finaldesignJSON, {
         onEachFeature: onEachFeature,
         style: miniMapstyleComp,
-    }).addTo(inputmap);
-
+    }).addTo(design_features);
 
     // load Synthesis
     // load Wordlcoud
@@ -330,6 +336,18 @@
             }
         }
     }
+    
+        // object with every neighbors of a node inside:
+        sigma.classes.graph.addMethod('neighbors', function(nodeId) {
+      var k,
+          neighbors = {},
+          index = this.allNeighborsIndex[nodeId] || {};
+  
+      for (k in index)
+        neighbors[k] = this.nodesIndex[k];
+  
+      return neighbors;
+    });
 
     s = new sigma({
          renderers: [
@@ -354,6 +372,84 @@
         edgeHoverExtremities: true
         }
     });
- 
-</script>
+
+    // Add a method to the graph model that returns an
+
+        // We first need to save the original colors of our
+        // nodes and edges, like this:
+        s.graph.nodes().forEach(function(n) {
+          n.originalColor = n.color;
+        });
+        s.graph.edges().forEach(function(e) {
+          e.originalColor = e.color;
+        });
+  
+
+        // When a node is clicked, we check for each node
+        // if it is a neighbor of the clicked one. If not,
+        // we set its color as grey, and else, it takes its
+        // original color.
+        // We do the same for the edges, and we only keep
+        // edges that have both extremities colored.
+        s.bind('clickNode', function(e) {
+          var nodeId = e.data.node.id,
+              toKeep = s.graph.neighbors(nodeId);
+          toKeep[nodeId] = e.data.node;
+  
+          s.graph.nodes().forEach(function(n) {
+            if (toKeep[n.id])
+              n.color = n.originalColor;
+            else
+              n.color = '#eee';
+          });
+  
+          s.graph.edges().forEach(function(e) {
+            if (toKeep[e.source] && toKeep[e.target])
+              e.color = e.originalColor;
+            else
+              e.color = '#eee';
+          });
+          
+          // Since the data has been modified, we need to
+          // call the refresh method to make the colors
+          // update effective.
+          s.refresh();
+         
+          keep_keys = Object.keys(toKeep).map(function (x) { 
+                return parseInt(x, 10); 
+            });
+          
+          for (let index = 0; index < map_features_list.length; index++) {
+              const element = map_features_list[index];
+              
+              if (keep_keys.includes(element.diagram_id)) {
+                
+              } else {
+                element.layer.setStyle({'fillOpacity':0.05});
+              }
+              
+          }
+
+        });
+  
+        // When the stage is clicked, we just color each
+        // node and edge with its original color.
+        s.bind('clickStage', function(e) {
+          s.graph.nodes().forEach(function(n) {
+            n.color = n.originalColor;
+          });
+  
+          s.graph.edges().forEach(function(e) {
+            e.color = e.originalColor;
+          });
+                    
+          design_features.eachLayer(function (layer) {
+                layer.setStyle({'fillOpacity':0.8});
+            });
+
+          // Same as in the previous event:
+          s.refresh();
+        });
+
+  </script>
 {% endif %} {% endblock %}
