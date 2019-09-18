@@ -26,7 +26,6 @@ q = Queue(connection=conn)
 
 # Imports
 
-
 app = Flask(__name__)
 
 @app.route('/', methods = ['GET'])
@@ -42,14 +41,14 @@ def api_root():
 		return Response(msg, status=400, mimetype='application/json')
 
 	if projectid and cteamid and apitoken and synthesisid:
+		# Initialize the API
 		myAPIHelper = GeodesignHub.GeodesignHubClient(url = config.apisettings['serviceurl'], project_id=projectid, token=apitoken)
-
+		# Download Data
 		r = myAPIHelper.get_synthesis(teamid = int(cteamid), synthesisid = synthesisid)
 		s = myAPIHelper.get_systems()
 		b = myAPIHelper.get_project_bounds()
-		
 		d = myAPIHelper.get_diagrams()
-
+		# Check responses / data
 		try:
 			assert r.status_code == 200
 		except AssertionError as ae:
@@ -63,14 +62,14 @@ def api_root():
 			print("Invalid reponse %s" % ae)
 		else:
 			systems = json.loads(s.text)
-		
+			
 		try:
 			assert d.status_code == 200
 		except AssertionError as ae:
 			print("Invalid reponse %s" % ae)
 		else:
 			diagrams = json.loads(d.text)
-		
+		# Loop over features and add to corpus and Corpus Dictionary
 		myBagofWordsGenerator = utils.BagofWordsGenerator()
 		formattedfinalsynthesis = {"type":"FeatureCollection","features":[]}
 		for f in finalsynthesis['features']:
@@ -79,7 +78,7 @@ def api_root():
 			formattedfinalsynthesis['features'].append(formattedfeature)
 			myBagofWordsGenerator.addtoCorpus(f['properties']['description'])
 			myBagofWordsGenerator.addtoCorpusDict(f['properties']['diagramid'],f['properties']['description'])
-
+		# Store / Cache in Redis
 		bowkey = 'bow-'+ synthesisid
 		wordfreq = redis.get(bowkey)
 		if wordfreq:
@@ -88,7 +87,6 @@ def api_root():
 			wordfreq = myBagofWordsGenerator.generateBagofWords()
 			
 			redis.set(bowkey, json.dumps(wordfreq))
-
 
 		key = 'ss-'+ synthesisid
 		ss = redis.get(key)
@@ -100,8 +98,6 @@ def api_root():
 			result = q.enqueue(utils.createSenteceSimilarity,{'data':tmpCorpusDict,'key':key})
 			sentenceSimilarity = {}
 		# sentenceSimilarity ={}
-		
-
 		try:
 			assert b.status_code == 200
 		except AssertionError as ae:
@@ -109,14 +105,12 @@ def api_root():
 		else:
 			bounds = json.loads(b.text)
 			bounds = bounds['bounds']
-		
 
 		designdata = {'systems':systems ,'synthesis':formattedfinalsynthesis,'bounds':bounds,'wordfreq':wordfreq,'fuzzymatches':sentenceSimilarity,'diagrams':diagrams}
 		msg = {"status":1,"message":"Diagrams have been uploaded","data":designdata}
 		# return Response(msg, status=400, mimetype='application/json')
-
 	else:
-		
+	
 		msg = {"status":0, "message":"Could not parse Project ID, Diagram ID or API Token ID. One or more of these were not found in your JSON request."}
 		# return Response(msg, status=400, mimetype='application/json')
 
