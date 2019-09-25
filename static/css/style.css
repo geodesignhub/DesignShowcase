@@ -144,6 +144,7 @@ tr.group:hover {
 .c-373737-policy,
 .c-eb827d-policy,
 .c-ffb671-policy,
+.c-e18cc8-policy,
 .c-cd329b-policy {
     color: black;
     background-size: 5px 5px;
@@ -227,6 +228,7 @@ tr.group:hover {
 .c-373737-policy span,
 .c-eb827d-policy span,
 .c-ffb671-policy span,
+.c-e18cc8-policy span,
 .c-cd329b-policy span {
     background: #FFFFFF;
 }
@@ -263,6 +265,11 @@ tr.group:hover {
 
 .c-704425 {
     background-color: #704425;
+    color: #FFFFFF;
+}
+
+.c-e18cc8 {
+    background-color: #e18cc8;
     color: #FFFFFF;
 }
 
@@ -631,6 +638,10 @@ tr.group:hover {
 
 .c-9ae32c-policy {
     background-image: linear-gradient(45deg, transparent 45%, #9ae32c 50%, transparent 55%, transparent 100%), linear-gradient(-45deg, transparent 45%, #9ae32c 50%, transparent 55%, transparent 100%);
+}
+
+.c-e18cc8-policy {
+    background-image: linear-gradient(45deg, transparent 45%, #e18cc8 50%, transparent 55%, transparent 100%), linear-gradient(-45deg, transparent 45%, #e18cc8 50%, transparent 55%, transparent 100%);
 }
 
 .c-f4a261-policy {
