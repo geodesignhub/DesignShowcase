@@ -324,6 +324,20 @@
         }).addTo(design_features);
         
         table = render_data_table();
+            
+        $('#diagTable tbody').on('click', 'tr', function () {
+            var data = table.row(this).data();
+            const diagramid = data[1];
+            
+            let dfeat_list_len = design_map_features_list.length;
+            for (let index2 = 0; index2 < dfeat_list_len; index2++) {
+                const cur_feat = design_map_features_list[index2];
+                if (cur_feat.diagram_id == diagramid){
+                    cur_feat.layer.openPopup();
+                    break;
+                }                
+            }
+        });
 
     }
 
@@ -403,23 +417,23 @@
         });
 
       
-        $('#diagTable tbody').on('click', 'tr', function () {
-            var data = table.row(this).data();
-            const diagramid = data[1];
-            
-            let dfeat_list_len = design_map_features_list.length;
-            for (let index2 = 0; index2 < dfeat_list_len; index2++) {
-                const cur_feat = design_map_features_list[index2];
-                if (cur_feat.diagram_id == diagramid){
-                    cur_feat.layer.openPopup();
-                    break;
-                }                
-            }
-        });
         return table;
     }
 
     var table =  render_data_table();
+    $('#diagTable tbody').on('click', 'tr', function () {
+        var data = table.row(this).data();
+        const diagramid = data[1];
+        
+        let dfeat_list_len = design_map_features_list.length;
+        for (let index2 = 0; index2 < dfeat_list_len; index2++) {
+            const cur_feat = design_map_features_list[index2];
+            if (cur_feat.diagram_id == diagramid){
+                cur_feat.layer.openPopup();
+                break;
+            }                
+        }
+    });
     var graphData = {
         "nodes": [],
         "edges": []
