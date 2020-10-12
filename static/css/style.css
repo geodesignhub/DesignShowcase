@@ -65,11 +65,17 @@ tr.group:hover {
     height: 100%;
 }
 
-#inputmap {
+.inputmap {
     height: 600px;
     border: 1px solid #DCDCDC;
 }
 
+
+.square {
+    width: 15px;
+    height: 15px;
+    display: inline-block;
+}
 
 
 .c-e54c00-policy,

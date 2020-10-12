@@ -36,6 +36,7 @@ def api_root():
 		cteamid = request.args.get('cteamid')
 		apitoken = request.args.get('apitoken')
 		synthesisid = request.args.get('synthesisid')
+
 	except KeyError as e:
 		msg = json.dumps({"message":"Could not parse Projectid, Diagram ID or API Token ID. One or more of these were not found in your JSON request."})
 		return Response(msg, status=400, mimetype='application/json')
@@ -48,10 +49,12 @@ def api_root():
 		s = myAPIHelper.get_systems()
 		b = myAPIHelper.get_project_bounds()
 		d = myAPIHelper.get_diagrams()
+		
 		# Check responses / data
 		try:
 			assert r.status_code == 200
 		except AssertionError as ae:
+			
 			print("Invalid reponse %s" % ae)
 		else:
 			finalsynthesis = json.loads(r.text)

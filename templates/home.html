@@ -4,14 +4,16 @@
     {% if op['status'] == 1 %}
     <br>
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-6">
             <h2>Diagram Details</h2>
-            <small>All the diagrams selected in this design grouped by system. If a diagram has multiple features they are displayed as individual entries.</small>
+            
+            <small>&nbsp;</small>
             <p>&nbsp;</p>
             <table id="diagTable" class="display" cellspacing="0" width="100%">
                 <thead>
                     <tr>
                         <th>Diagram</th>
+                        <th>ID</th>
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
@@ -20,6 +22,7 @@
                 <tfoot>
                     <tr>
                         <th>Diagram</th>
+                        <th>ID</th>
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
@@ -28,6 +31,20 @@
                 <tbody>
                 </tbody>
             </table>
+        </div>
+        <div class="col-md-6">
+            <h2>Design Synthesis</h2>
+            <small>&nbsp;</small>
+            <p>&nbsp;</p>
+            <div id="inputmap_filter" class="inputmap"></div>
+            <br>
+            <div id="systemsCBCont">
+                <h4>Systems</h4>
+                <div id="systemsCB"></div>
+                <br>
+                <small id="procstatus"></small>
+            </div>
+
         </div>
     </div>
     <br>
@@ -43,28 +60,30 @@
         </div>
     </div>
     <br>
-    
+
     <div class="row">
         <div class="col-md-6">
             <h2>Design Synthesis</h2>
-            <small>&nbsp;</small> 
-           
-            <div id="inputmap"></div>
+            <small>&nbsp;</small>
+
+            <div id="inputmap_nodes" class="inputmap"></div>
             <!-- <p><a class="btn btn-secondary" href="#" role="button">View details &raquo;</a></p> -->
         </div>
-        
+
         <div class="col-md-6">
             <h2>Diagram Connections</h2><small>Click on the edges to highlight them on the map</small>
             <div id="graphcontainer"></div>
-            
-        </div>        
+
+        </div>
     </div>
     <div class="row">
         <div class="col-md-12">
-            <small>The chart above shows a natural language analysis of similarity of diagram titles, if two titles of a diagram are similar they are linked with a edge. If a chart is not loaded, please refresh after a few moments, the server may still be computing. </small>
+            <small>The chart above shows a natural language analysis of similarity of diagram titles, if two titles of a
+                diagram are similar they are linked with a edge. If a chart is not loaded, please refresh after a few
+                moments, the server may still be computing. </small>
         </div>
     </div>
-    
+
     {% else %}
     <p>{{op['message']}} </p>
     {% endif %}
@@ -79,7 +98,7 @@
 <!-- /container -->{% endblock %} {% block footer %} {% if op['status'] == 1 %}
 <script type="text/javascript">
     var svgDrawing = SVG('drawing').size(10, 10);
-    
+
     function miniMapstyleComp(feature) {
         // console.log(feature.properties)
         var curFeature = feature.geometry.type;
@@ -119,7 +138,7 @@
     }
 
     function setSVGStyle(reqColor) {
-        var pattern = svgDrawing.pattern(6, 6, function(add) {
+        var pattern = svgDrawing.pattern(6, 6, function (add) {
             // add.rect(5, 5).fill(reqColor)
             add.line(0, 0, 6, 6).stroke({
                 width: 1,
@@ -159,38 +178,154 @@
     var bounds = "{{op['data']['bounds']|safe}}";
     var finaldesignJSON = {{op['data']['synthesis']|safe}};
     var diagrams = {{op['data']['diagrams']|safe}};
+
+    var systems = {{op['data']['systems']|safe}}; //var test is now assigned to getTest which will only work on browsers  
+
     var latLngs = bounds.split(',');
     var southWest = L.latLng(latLngs[1], latLngs[0]);
     var northEast = L.latLng(latLngs[3], latLngs[2]);
     var mb = L.latLngBounds(southWest, northEast);
-    var inputmap = L.map('inputmap', {
-        zoomControl: true,
+
+    // input nodes map
+
+    var inputmap_nodes = L.map('inputmap_nodes', {
+        zoomControl: false,        
+        dragging: false,
         minZoom: 6,
         maxZoom: 18,
     });
     var map_features_list = [];
+
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
-        map_features_list.push({'diagram_id':feature.properties.diagramid, 'layer':layer});
+        map_features_list.push({
+            'diagram_id': feature.properties.diagramid,
+            'layer': layer
+        });
         if (feature.properties && feature.properties.description) {
             layer.bindPopup(feature.properties.description);
         }
     }
 
     // FeatureGroup is to store editable layers
-    var design_features = L.featureGroup().addTo(inputmap);
-    
+    var filter_design_features = L.featureGroup().addTo(inputmap_nodes);
 
     var inputbaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
         maxZoom: 18,
-    }).addTo(inputmap);
-    inputmap.fitBounds(mb);
+    }).addTo(inputmap_nodes);
+    inputmap_nodes.fitBounds(mb);
 
     L.geoJSON(finaldesignJSON, {
         onEachFeature: onEachFeature,
         style: miniMapstyleComp,
+    }).addTo(filter_design_features);
+
+    // Filter system map
+
+    var inputmap_filter = L.map('inputmap_filter', {
+        zoomControl: false,
+        dragging: false,
+        minZoom: 6,
+        maxZoom: 18,
+    });
+
+    var design_map_features_list = [];
+    function onEachFeatureFilter(feature, layer) {
+
+        design_map_features_list.push({
+            'diagram_id': feature.properties.diagramid,
+            'layer': layer
+        });
+        if (feature.properties && feature.properties.description) {
+            layer.bindPopup(feature.properties.description);
+        }
+    }
+
+    // FeatureGroup is to store editable layers
+    var design_features = L.featureGroup().addTo(inputmap_filter);
+
+    var inputbaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
+        maxZoom: 18,
+    }).addTo(inputmap_filter);
+    inputmap_filter.fitBounds(mb);
+
+    L.geoJSON(finaldesignJSON, {
+        onEachFeature: onEachFeatureFilter,
+        style: miniMapstyleComp,
     }).addTo(design_features);
+
+
+
+    for (var x = 0; x < systems.length; x++) {
+        $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox" checked /> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;');
+
+    }
+
+    $('#systemsCB').click(function () {
+        runConstrainWorker();
+    });
+
+    function runConstrainWorker() {
+
+        var selectedsystems = [];
+        $('#systemsCB input:checked').each(function () {
+            selectedsystems.push($(this).attr('id'));
+        });
+        $("#procstatus").show();
+        table.destroy();
+        $("#diagTable tbody tr").remove();
+        let constraintedFeatures = {
+            "type": "FeatureCollection",
+            "features": []
+        }
+        let final_design_featlen = finaldesignJSON.features.length;
+
+        for (var i3 = final_design_featlen - 1; i3 >= 0; i3--) {
+            const curFeat = finaldesignJSON.features[i3];
+            const curFeatProps = curFeat['properties'];
+            const curFeatSys = curFeatProps.sysname;
+            const did = curFeatProps['diagramid'];
+            var srank = "";
+            if (selectedsystems.indexOf(curFeatSys) > -1) {
+                constraintedFeatures.features.push(curFeat);
+
+                for (var i8 = diagrams.length - 1; i8 >= 0; i8--) {
+                    var cDiagram = diagrams[i8];
+
+                    if (cDiagram.id == did) {
+                        desc = cDiagram.worlddescription;
+                        var sid = cDiagram.sysid;
+                        var tranking = cDiagram.rank;
+                        for (var j2 = systems.length - 1; j2 >= 0; j2--) {
+                            var curSys = systems[j2];
+                            if (curSys.id === sid) {
+                                sysname = curSys.sysname;
+                                break;
+                            }
+                        }
+                        srank = sysname + " " + tranking + " ";   
+                                           
+                        $('#diagTable > tbody:last-child').append('<tr><td>' +  srank  +'</td><td>' + did+'</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
+
+                        break;
+                    }
+
+                }
+            }
+        }
+
+        design_features.clearLayers();
+        design_map_features_list = [];
+        L.geoJSON(constraintedFeatures, {
+            onEachFeature: onEachFeatureFilter,
+            style: miniMapstyleComp,
+        }).addTo(design_features);
+        
+        table = render_data_table();
+
+    }
 
     // load Synthesis
     // load Wordlcoud
@@ -225,66 +360,71 @@
                 break;
             }
         }
-
-        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + curFeatProps['description'] +'</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
+        
+        $('#diagTable > tbody:last-child').append('<tr><td>' +  srank  +'</td><td>' + did+'</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
 
 
     }
-    var table = $('#diagTable').DataTable({
-        "rowGroup": {
-            dataSrc: 'group'
-        },
-        "columnDefs": [{
-            "visible": false,
-            "targets": 3
-        }],
-        "order": [
-            [3, 'asc']
-        ],
-        "displayLength": 25,
-        "drawCallback": function(settings) {
-            var api = this.api();
-            var rows = api.rows({
-                page: 'current'
-            }).nodes();
-            var last = null;
 
-            api.column(3, {
-                page: 'current'
-            }).data().each(function(group, i) {
-                if (last !== group) {
-                    $(rows).eq(i).before(
-                        '<tr class="group"><td colspan="5">' + group + '</td></tr>'
-                    );
+    function render_data_table(){
 
-                    last = group;
-                }
-            });
-        }
-    });
+        var table = $('#diagTable').DataTable({
+            "rowGroup": {
+                dataSrc: 'group'
+            },
+            "columnDefs": [{
+                "visible": false,
+                "targets": [1,3]
+            }],
+            "order": [
+                [3, 'asc']
+            ],
+            "searching": false,
+            "bLengthChange": false,
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({
+                    page: 'current'
+                }).nodes();
+                var last = null;
 
-    // Order by the grouping
-    $('#diagTable tbody').on('click', 'tr.group', function() {
-        var currentOrder = table.order()[0];
-        if (currentOrder[0] === 2 && currentOrder[1] === 'asc') {
-            table.order([2, 'desc']).draw();
-        } else {
-            table.order([2, 'asc']).draw();
-        }
-    });
-    $('#diagTable tbody').on('click', 'tr', function() {
-        var data = table.row(this).data();
-        const diagramid = data[0];
-        if (diagramid in fuzzyMatches) {
-            const related = fuzzyMatches[diagramid];
-            console.log(related)
-        }
+                api.column(4, {
+                    page: 'current'
+                }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group"><td colspan="5">' + group + '</td></tr>'
+                        );
 
-    });
+                        last = group;
+                    }
+                });
+            }
+        });
+
+      
+        $('#diagTable tbody').on('click', 'tr', function () {
+            var data = table.row(this).data();
+            const diagramid = data[1];
+            
+            let dfeat_list_len = design_map_features_list.length;
+            for (let index2 = 0; index2 < dfeat_list_len; index2++) {
+                const cur_feat = design_map_features_list[index2];
+                if (cur_feat.diagram_id == diagramid){
+                    cur_feat.layer.openPopup();
+                    break;
+                }                
+            }
+        });
+        return table;
+    }
+
+    var table =  render_data_table();
     var graphData = {
         "nodes": [],
         "edges": []
     };
+
     for (var diagramid in fuzzyMatches) {
         var links = fuzzyMatches[diagramid];
         var desc = "";
@@ -309,6 +449,7 @@
                 break;
             }
         }
+
         graphData.nodes.push({
             "size": 0.001,
             "id": diagramid,
@@ -323,129 +464,126 @@
 
                 graphData.edges.push({
                     "id": diagramid + "-" + curLink,
-                    "label":diagramid + "-" + curLink,
+                    "label": diagramid + "-" + curLink,
                     "source": diagramid,
                     "target": curLink,
-                    "size":1,
+                    "size": 1,
                     'color': '#ccc'
                 });
             }
         }
     }
-    
-        // object with every neighbors of a node inside:
-        sigma.classes.graph.addMethod('neighbors', function(nodeId) {
-      var k,
-          neighbors = {},
-          index = this.allNeighborsIndex[nodeId] || {};
-  
-      for (k in index)
-        neighbors[k] = this.nodesIndex[k];
-  
-      return neighbors;
+
+    // object with every neighbors of a node inside:
+    sigma.classes.graph.addMethod('neighbors', function (nodeId) {
+        var k,
+            neighbors = {},
+            index = this.allNeighborsIndex[nodeId] || {};
+
+        for (k in index)
+            neighbors[k] = this.nodesIndex[k];
+
+        return neighbors;
     });
 
     s = new sigma({
-         renderers: [
-                {
-                  container: document.getElementById('graphcontainer'),
-                  type: 'canvas' // sigma.renderers.canvas works as well
-                }
-              ],
+        renderers: [{
+            container: document.getElementById('graphcontainer'),
+            type: 'canvas' // sigma.renderers.canvas works as well
+        }],
         graph: graphData,
 
         settings: {
             drawLabels: false,
-        labelSize: 'proportional',
-        defaultEdgeType:'line',
-        enableHovering:true,
-        edgeColor: "default",
-        font:"Open Sans",
-        enableEdgeHovering: true,
-        edgeHoverColor: 'edge',
-        defaultEdgeHoverColor: '#000',
-        edgeHoverSizeRatio: 1,
-        edgeHoverExtremities: true
+            labelSize: 'proportional',
+            defaultEdgeType: 'line',
+            enableHovering: true,
+            edgeColor: "default",
+            font: "Open Sans",
+            enableEdgeHovering: true,
+            edgeHoverColor: 'edge',
+            defaultEdgeHoverColor: '#000',
+            edgeHoverSizeRatio: 1,
+            edgeHoverExtremities: true
         }
     });
 
     // Add a method to the graph model that returns an
 
-        // We first need to save the original colors of our
-        // nodes and edges, like this:
-        s.graph.nodes().forEach(function(n) {
-          n.originalColor = n.color;
-        });
-        s.graph.edges().forEach(function(e) {
-          e.originalColor = e.color;
-        });
-  
+    // We first need to save the original colors of our
+    // nodes and edges, like this:
+    s.graph.nodes().forEach(function (n) {
+        n.originalColor = n.color;
+    });
+    s.graph.edges().forEach(function (e) {
+        e.originalColor = e.color;
+    });
 
-        // When a node is clicked, we check for each node
-        // if it is a neighbor of the clicked one. If not,
-        // we set its color as grey, and else, it takes its
-        // original color.
-        // We do the same for the edges, and we only keep
-        // edges that have both extremities colored.
-        s.bind('clickNode', function(e) {
-          var nodeId = e.data.node.id,
-              toKeep = s.graph.neighbors(nodeId);
-          toKeep[nodeId] = e.data.node;
-  
-          s.graph.nodes().forEach(function(n) {
+    // When a node is clicked, we check for each node
+    // if it is a neighbor of the clicked one. If not,
+    // we set its color as grey, and else, it takes its
+    // original color.
+    // We do the same for the edges, and we only keep
+    // edges that have both extremities colored.
+    s.bind('clickNode', function (e) {
+        var nodeId = e.data.node.id,
+            toKeep = s.graph.neighbors(nodeId);
+        toKeep[nodeId] = e.data.node;
+
+        s.graph.nodes().forEach(function (n) {
             if (toKeep[n.id])
-              n.color = n.originalColor;
+                n.color = n.originalColor;
             else
-              n.color = '#eee';
-          });
-  
-          s.graph.edges().forEach(function(e) {
+                n.color = '#eee';
+        });
+
+        s.graph.edges().forEach(function (e) {
             if (toKeep[e.source] && toKeep[e.target])
-              e.color = e.originalColor;
+                e.color = e.originalColor;
             else
-              e.color = '#eee';
-          });
-          
-          // Since the data has been modified, we need to
-          // call the refresh method to make the colors
-          // update effective.
-          s.refresh();
-         
-          keep_keys = Object.keys(toKeep).map(function (x) { 
-                return parseInt(x, 10); 
-            });
-          
-          for (let index = 0; index < map_features_list.length; index++) {
-              const element = map_features_list[index];
-              
-              if (keep_keys.includes(element.diagram_id)) {
-                
-              } else {
-                element.layer.setStyle({'fillOpacity':0.05});
-              }
-              
-          }
-
+                e.color = '#eee';
         });
-  
-        // When the stage is clicked, we just color each
-        // node and edge with its original color.
-        s.bind('clickStage', function(e) {
-          s.graph.nodes().forEach(function(n) {
+
+        // Since the data has been modified, we need to
+        // call the refresh method to make the colors
+        // update effective.
+        s.refresh();
+
+        keep_keys = Object.keys(toKeep).map(function (x) {
+            return parseInt(x, 10);
+        });
+
+        for (let index = 0; index < map_features_list.length; index++) {
+            const element = map_features_list[index];
+            if (keep_keys.includes(element.diagram_id)) {
+            } else {
+                element.layer.setStyle({
+                    'fillOpacity': 0.05
+                });
+            }
+        }
+
+    });
+
+    // When the stage is clicked, we just color each
+    // node and edge with its original color.
+    s.bind('clickStage', function (e) {
+        s.graph.nodes().forEach(function (n) {
             n.color = n.originalColor;
-          });
-  
-          s.graph.edges().forEach(function(e) {
-            e.color = e.originalColor;
-          });
-                    
-          design_features.eachLayer(function (layer) {
-                layer.setStyle({'fillOpacity':0.8});
-            });
-
-          // Same as in the previous event:
-          s.refresh();
         });
 
-  </script>
+        s.graph.edges().forEach(function (e) {
+            e.color = e.originalColor;
+        });
+
+        design_features.eachLayer(function (layer) {
+            layer.setStyle({
+                'fillOpacity': 0.8
+            });
+        });
+
+        // Same as in the previous event:
+        s.refresh();
+    });
+</script>
 {% endif %} {% endblock %}
