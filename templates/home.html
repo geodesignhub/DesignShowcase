@@ -214,7 +214,7 @@
     }
 
     // FeatureGroup is to store editable layers
-    var filter_design_features = L.featureGroup().addTo(inputmap_nodes);
+    var node_design_features = L.featureGroup().addTo(inputmap_nodes);
 
     var inputbaseLayer = L.tileLayer('https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
@@ -225,7 +225,7 @@
     L.geoJSON(finaldesignJSON, {
         onEachFeature: onEachFeature,
         style: miniMapstyleComp,
-    }).addTo(filter_design_features);
+    }).addTo(node_design_features);
 
     // Filter system map
 
@@ -584,7 +584,8 @@
             if (keep_keys.includes(element.diagram_id)) {
             } else {
                 element.layer.setStyle({
-                    'fillOpacity': 0.05
+                    'fillOpacity': 0.05,
+                    'opacity':0.05
                 });
             }
         }
@@ -602,9 +603,10 @@
             e.color = e.originalColor;
         });
 
-        design_features.eachLayer(function (layer) {
+        node_design_features.eachLayer(function (layer) {
             layer.setStyle({
-                'fillOpacity': 0.8
+                'fillOpacity': 0.8,
+                'opacity':0.8
             });
         });
 
