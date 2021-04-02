@@ -76,10 +76,17 @@ def api_root():
 		myBagofWordsGenerator = utils.BagofWordsGenerator()
 		formattedfinalsynthesis = {"type":"FeatureCollection","features":[]}
 		for f in finalsynthesis['features']:
+			
 			diagramid = f['properties']['diagramid']
+			try:
+				notes = f['properties']['notes']
+			except KeyError as ke:
+				notes = None
 			formattedfeature = f
 			formattedfinalsynthesis['features'].append(formattedfeature)
 			myBagofWordsGenerator.addtoCorpus(f['properties']['description'])
+			if notes: 
+				myBagofWordsGenerator.addtoCorpus(notes)
 			myBagofWordsGenerator.addtoCorpusDict(f['properties']['diagramid'],f['properties']['description'])
 		# Store / Cache in Redis
 		bowkey = 'bow-'+ synthesisid

@@ -4,9 +4,9 @@
     {% if op['status'] == 1 %}
     <br>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
             <h2>Diagram Details</h2>
-            
+
             <small>&nbsp;</small>
             <p>&nbsp;</p>
             <table id="diagTable" class="display" cellspacing="0" width="100%">
@@ -17,6 +17,7 @@
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
+                        <th>Notes</th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -26,13 +27,14 @@
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
+                        <th>Notes</th>
                     </tr>
                 </tfoot>
                 <tbody>
                 </tbody>
             </table>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             <h2>Design Synthesis</h2>
             <small>&nbsp;</small>
             <p>&nbsp;</p>
@@ -92,7 +94,7 @@
     <br>
     <hr>
     <footer>
-        <p>&copy; Geodesignhub 2019</p>
+        <p>&copy; 2021 Geodesignhub Design Showcase</p>
     </footer>
 </div>
 <!-- /container -->{% endblock %} {% block footer %} {% if op['status'] == 1 %}
@@ -178,7 +180,6 @@
     var bounds = "{{op['data']['bounds']|safe}}";
     var finaldesignJSON = {{op['data']['synthesis']|safe}};
     var diagrams = {{op['data']['diagrams']|safe}};
-
     var systems = {{op['data']['systems']|safe}}; //var test is now assigned to getTest which will only work on browsers  
 
     var latLngs = bounds.split(',');
@@ -189,7 +190,7 @@
     // input nodes map
 
     var inputmap_nodes = L.map('inputmap_nodes', {
-        
+
         minZoom: 6,
         maxZoom: 18,
     });
@@ -228,6 +229,7 @@
     });
 
     var design_map_features_list = [];
+
     function onEachFeatureFilter(feature, layer) {
 
         design_map_features_list.push({
@@ -256,7 +258,9 @@
 
 
     for (var x = 0; x < systems.length; x++) {
-        $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].sysname + "'" + 'type="checkbox" checked /> <span class="square c-' + systems[x].syscolor.substring(1) + '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;');
+        $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].sysname + "'" +
+            'type="checkbox" checked /> <span class="square c-' + systems[x].syscolor.substring(1) +
+            '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;');
 
     }
 
@@ -302,9 +306,11 @@
                                 break;
                             }
                         }
-                        srank = sysname + " " + tranking + " ";   
-                                           
-                        $('#diagTable > tbody:last-child').append('<tr><td>' +  srank  +'</td><td>' + did+'</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
+                        srank = sysname + " " + tranking + " ";
+
+                        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' +
+                            curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' +
+                            curFeatProps['sysname'] + '</td></tr>');
 
                         break;
                     }
@@ -319,20 +325,20 @@
             onEachFeature: onEachFeatureFilter,
             style: miniMapstyleComp,
         }).addTo(design_features);
-        
+
         table = render_data_table();
-            
+
         $('#diagTable tbody').on('click', 'tr', function () {
             var data = table.row(this).data();
             const diagramid = data[1];
-            
+
             let dfeat_list_len = design_map_features_list.length;
             for (let index2 = 0; index2 < dfeat_list_len; index2++) {
                 const cur_feat = design_map_features_list[index2];
-                if (cur_feat.diagram_id == diagramid){
+                if (cur_feat.diagram_id == diagramid) {
                     cur_feat.layer.openPopup();
                     break;
-                }                
+                }
             }
         });
 
@@ -371,28 +377,32 @@
                 break;
             }
         }
-        
-        $('#diagTable > tbody:last-child').append('<tr><td>' +  srank  +'</td><td>' + did+'</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
+
+        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps[
+                'description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +
+            '</td><td>' + curFeatProps['notes'] + '</td>' + '</tr>');
 
 
     }
 
-    function render_data_table(){
+    function render_data_table() {
 
         var table = $('#diagTable').DataTable({
             "rowGroup": {
                 dataSrc: 'group'
             },
             "columnDefs": [{
+                "width":"10%",
                 "visible": false,
-                "targets": [1,3]
+                "targets": [1, 3],
+
             }],
             "order": [
                 [3, 'asc']
             ],
-            "bInfo" : false,
+            "bInfo": false,
             "searching": false,
-            "bLengthChange": false,
+            "pageLength": 25,
             "drawCallback": function (settings) {
                 var api = this.api();
                 var rows = api.rows({
@@ -414,22 +424,22 @@
             }
         });
 
-      
+
         return table;
     }
 
-    var table =  render_data_table();
+    var table = render_data_table();
     $('#diagTable tbody').on('click', 'tr', function () {
         var data = table.row(this).data();
         const diagramid = data[1];
-        
+
         let dfeat_list_len = design_map_features_list.length;
         for (let index2 = 0; index2 < dfeat_list_len; index2++) {
             const cur_feat = design_map_features_list[index2];
-            if (cur_feat.diagram_id == diagramid){
+            if (cur_feat.diagram_id == diagramid) {
                 cur_feat.layer.openPopup();
                 break;
-            }                
+            }
         }
     });
     var graphData = {
@@ -567,11 +577,10 @@
 
         for (let index = 0; index < map_features_list.length; index++) {
             const element = map_features_list[index];
-            if (keep_keys.includes(element.diagram_id)) {
-            } else {
+            if (keep_keys.includes(element.diagram_id)) {} else {
                 element.layer.setStyle({
                     'fillOpacity': 0.05,
-                    'opacity':0.05
+                    'opacity': 0.05
                 });
             }
         }
@@ -592,7 +601,7 @@
         node_design_features.eachLayer(function (layer) {
             layer.setStyle({
                 'fillOpacity': 0.8,
-                'opacity':0.8
+                'opacity': 0.8
             });
         });
 
