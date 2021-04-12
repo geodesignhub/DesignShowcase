@@ -17,7 +17,6 @@
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
-                        <th>Notes</th>
                     </tr>
                 </thead>
                 <tfoot>
@@ -27,7 +26,6 @@
                         <th>Title</th>
                         <th>Funding</th>
                         <th>System</th>
-                        <th>Notes</th>
                     </tr>
                 </tfoot>
                 <tbody>
@@ -380,7 +378,7 @@
 
         $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps[
                 'description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +
-            '</td><td>' + curFeatProps['notes'] + '</td>' + '</tr>');
+            '</td></tr>');
 
 
     }
@@ -402,7 +400,7 @@
             ],
             "bInfo": false,
             "searching": false,
-            "pageLength": 25,
+            "pageLength": 15,
             "drawCallback": function (settings) {
                 var api = this.api();
                 var rows = api.rows({
