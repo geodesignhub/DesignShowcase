@@ -1,6 +1,6 @@
 from shapely.geometry.base import BaseGeometry
-from shapely.geometry import shape, mapping, shape, asShape
-from shapely.geometry import MultiPolygon, MultiPoint, MultiLineString
+from shapely.geometry import shape, mapping, shape
+
 import json
 from shapely import speedups
 
