@@ -256,9 +256,9 @@
 
 
     for (var x = 0; x < systems.length; x++) {
-        $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].sysname + "'" +
-            'type="checkbox" checked /> <span class="square c-' + systems[x].syscolor.substring(1) +
-            '"></span>&nbsp;&nbsp;' + systems[x].sysname + '</input>&nbsp;&nbsp;');
+        $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].name + "'" +
+            'type="checkbox" checked /> <span class="square c-' + systems[x].color.substring(1) +
+            '"></span>&nbsp;&nbsp;' + systems[x].name + '</input>&nbsp;&nbsp;');
 
     }
 
@@ -286,29 +286,30 @@
             const curFeatProps = curFeat['properties'];
             const curFeatSys = curFeatProps.sysname;
             const did = curFeatProps['diagramid'];
-            var srank = "";
+            
+            let  srank = "";
+            let system_name = "";
+            let ranking =0;
             if (selectedsystems.indexOf(curFeatSys) > -1) {
                 constraintedFeatures.features.push(curFeat);
 
-                for (var i8 = diagrams.length - 1; i8 >= 0; i8--) {
-                    var cDiagram = diagrams[i8];
+                for (let i8 = diagrams.length - 1; i8 >= 0; i8--) {
+                    const cDiagram = diagrams[i8];
 
                     if (cDiagram.id == did) {
-                        desc = cDiagram.worlddescription;
-                        var sid = cDiagram.sysid;
-                        var tranking = cDiagram.rank;
+                        let desc = cDiagram.worlddescription;
+                        let sid = cDiagram.sysid;
+                        ranking = cDiagram.rank;
                         for (var j2 = systems.length - 1; j2 >= 0; j2--) {
                             var curSys = systems[j2];
                             if (curSys.id === sid) {
-                                sysname = curSys.sysname;
+                                system_name = curSys.name;
                                 break;
                             }
                         }
-                        srank = sysname + " " + tranking + " ";
-
-                        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' +
-                            curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' +
-                            curFeatProps['sysname'] + '</td></tr>');
+                        srank = system_name + " " + ranking + " ";
+                        
+                         $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +'</td></tr>');
 
                         break;
                     }
@@ -367,7 +368,7 @@
                 for (var j1 = systems.length - 1; j1 >= 0; j1--) {
                     var curSys = systems[j1];
                     if (curSys.id === sid) {
-                        sysname = curSys.sysname;
+                        sysname = curSys.name;
                         break;
                     }
                 }
@@ -376,10 +377,7 @@
             }
         }
 
-        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps[
-                'description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +
-            '</td></tr>');
-
+        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +'</td></tr>');
 
     }
 
@@ -460,12 +458,12 @@
                 for (var j3 = systems.length - 1; j3 >= 0; j3--) {
                     var curSys = systems[j3];
                     if (curSys.id === sysid) {
-                        sysname = curSys.sysname;
-                        syscolor = curSys.syscolor;
+                        sysname = curSys.name;
+                        syscolor = curSys.color;
                         break;
                     }
                 }
-                sysrank = sysname + " " + ranking + " " + desc;
+                sysrank = name + " " + ranking + " " + desc;
                 break;
             }
         }
