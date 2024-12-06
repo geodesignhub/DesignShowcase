@@ -1,12 +1,14 @@
 import os
-import difflib
 import nltk
-import string
 from collections import OrderedDict
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import wordnet as wn
-import redis
 import json
+from conn import get_redis
+from sklearn.feature_extraction.text import CountVectorizer
+
+
+redis = get_redis()
 
 nltk.download('punkt')
 nltk.download('stopwords')
@@ -15,23 +17,21 @@ nltk.download('wordnet')
 redis_url = os.getenv('REDIS_URL', 'redis://localhost:6379')
 redis = redis.from_url(redis_url)
 
-from sklearn.feature_extraction.text import CountVectorizer
-
 class BagofWordsGenerator():
 	def __init__(self):
 		self.corpus = []
 		self.corpusDict = {}
 
-	def addtoCorpus(self, diagramdescirption):
-		self.corpus.append(diagramdescirption)
+	def add_to_corpus(self, diagram_description):
+		self.corpus.append(diagram_description)
 
-	def addtoCorpusDict(self,diagramid, diagramdescirption):
-		self.corpusDict[diagramid] = diagramdescirption
+	def add_to_corpus_dict(self,diagramid, diagram_description):
+		self.corpusDict[diagramid] = diagram_description
 
-	def getOrderedCorpus(self):
+	def get_ordered_corpus(self):
 		return self.corpusDict
 
-	def generateBagofWords(self):
+	def generate_bag_of_words(self):
 		words = []
 		vectorizer = CountVectorizer()
 		features = vectorizer.fit_transform(self.corpus).todense()
@@ -81,23 +81,23 @@ class SentenceSimilarity():
 		sentence1 = pos_tag(word_tokenize(sentence1))
 		sentence2 = pos_tag(word_tokenize(sentence2))
 
-		synsets1 = [self.tagged_to_synset(*tagged_word) for tagged_word in sentence1]
-		synsets2 = [self.tagged_to_synset(*tagged_word) for tagged_word in sentence2]
+		syn_sets_1 = [self.tagged_to_synset(*tagged_word) for tagged_word in sentence1]
+		syn_sets_2 = [self.tagged_to_synset(*tagged_word) for tagged_word in sentence2]
 
-		synsets1 = [ss for ss in synsets1 if ss]
-		synsets2 = [ss for ss in synsets2 if ss]
+		syn_sets_1 = [ss for ss in syn_sets_1 if ss]
+		syn_sets_2 = [ss for ss in syn_sets_2 if ss]
 
 		score, count = 0.0, 0
 		best_score = [0.0]
-		for ss1 in synsets1:
-			for ss2 in synsets2:
+		for ss1 in syn_sets_1:
+			for ss2 in syn_sets_2:
 				best1_score=ss1.path_similarity(ss2)
-				if best1_score is not None:
+				if best1_score:
 					best_score.append(best1_score)
 			max1=max(best_score)
-			if best_score is not None:
+			if best_score:
 				score += max1
-				if max1 is not 0.0:
+				if max1 != 0.0:
 					count += 1
 					best_score=[0.0]
 
@@ -108,41 +108,41 @@ class SentenceSimilarity():
 		return score
 
 
-	def doSentenceSimilarity(self):
+	def perform_sentence_similarity(self):
 		
 		for idx, t in enumerate(self.sentences):
-			cDictList = list(self.corpusDict.items())
-			matchlist = []
-			sourcediagramid = cDictList[idx][0]
+			corpus_dictionary_list = list(self.corpusDict.items())
+			match_list = []
+			source_diagram_id = corpus_dictionary_list[idx][0]
 			target_sentence = t
 
 			for sid, sentence in enumerate(self.sentences):
 				# print("Similarity(\"%s\", \"%s\") = %s" % (target_sentence, sentence, self.sentence_similarity(target_sentence, sentence)))
 				# print("Similarity(\"%s\", \"%s\") = %s" % (sentence, target_sentence, self.sentence_similarity(sentence, target_sentence)))
 				if ((self.sentence_similarity(target_sentence, sentence) > 0.4 and self.sentence_similarity(sentence, target_sentence) > 0.6)):
-					targetdiagramid = cDictList[sid][0]
-					matchlist.append(targetdiagramid)
+					target_diagram_id = corpus_dictionary_list[sid][0]
+					match_list.append(target_diagram_id)
 				else:
-					matchlist.append(0)
+					match_list.append(0)
 
 				# if (self.is_ci_partial_seq_token_stopword_lemma_match(target_sentence, sentence)):
-				# 	targetdiagramid = cDictList[sid][0]
-				# 	matchlist.append(targetdiagramid)
+				# 	target_diagram_id = corpus_dictionary_list[sid][0]
+				# 	match_list.append(target_diagram_id)
 				# else:
-				# 	matchlist.append(0)
-			self.matchingDict[sourcediagramid] = matchlist
+				# 	match_list.append(0)
+			self.matchingDict[source_diagram_id] = match_list
 
 		return self.matchingDict
 		# return 0
 
-def createSenteceSimilarity(inputdict):
-	tmpCorpusDict = inputdict['data']
-	key = inputdict['key']
-	orderedCorpusDict = OrderedDict(sorted(tmpCorpusDict.items(), key=lambda t: t[0]))
-	mySS = SentenceSimilarity()
-	mySS.generateSentences(orderedCorpusDict)
+def create_sentence_similarity(input_dict):
+	temporary_corpus_dictionary = input_dict['data']
+	key = input_dict['key']
+	orderedCorpusDict = OrderedDict(sorted(temporary_corpus_dictionary.items(), key=lambda t: t[0]))
+	my_sentence_similarity = SentenceSimilarity()
+	my_sentence_similarity.generateSentences(orderedCorpusDict)
 
-	sentenceSimilarity = mySS.doSentenceSimilarity()
+	sentence_similarity = my_sentence_similarity.perform_sentence_similarity()
 	
-	redis.set(key, json.dumps(sentenceSimilarity))
+	redis.set(key, json.dumps(sentence_similarity))
 

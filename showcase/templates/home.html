@@ -156,34 +156,35 @@
 
         return type === 'policy' ? '#707070 ' :
             type === 'project' ? '#a69695 ' :
-            type === 'red2' ? '#bd0026' :
-            type === 'red' ? '#f03b20' :
-            type === 'yellow' ? '#FFFF00' :
-            type === 'green' ? '#74c476' :
-            type === 'green2' ? '#31a354' :
-            type === 'green3' ? '#006d2c' :
-            type === 'purple' ? '#CFACF7' :
-            type === 'purple2' ? '#8D6CBF' :
-            type === 'purple3' ? '#601286' :
-            type === 'orange' ? '#FFA927' :
-            type === 'orange2' ? '#F8872E' :
-            type === 'orange3' ? '#FC6B0A' :
-            type === 'constraints' ? '#343434' :
-            type === 'boundaries' ? '#a6cee3' :
-            type === 'boundaries2' ? '#b2df8a' :
-            '#808080';
+                type === 'red2' ? '#bd0026' :
+                    type === 'red' ? '#f03b20' :
+                        type === 'yellow' ? '#FFFF00' :
+                            type === 'green' ? '#74c476' :
+                                type === 'green2' ? '#31a354' :
+                                    type === 'green3' ? '#006d2c' :
+                                        type === 'purple' ? '#CFACF7' :
+                                            type === 'purple2' ? '#8D6CBF' :
+                                                type === 'purple3' ? '#601286' :
+                                                    type === 'orange' ? '#FFA927' :
+                                                        type === 'orange2' ? '#F8872E' :
+                                                            type === 'orange3' ? '#FC6B0A' :
+                                                                type === 'constraints' ? '#343434' :
+                                                                    type === 'boundaries' ? '#a6cee3' :
+                                                                        type === 'boundaries2' ? '#b2df8a' :
+                                                                            '#808080';
     }
 
 
-    var bounds = "{{op['data']['bounds']|safe}}";
+    const bounds = "{{op['data']['bounds']|safe}}";
     var finaldesignJSON = {{op['data']['synthesis']|safe}};
     var diagrams = {{op['data']['diagrams']|safe}};
     var systems = {{op['data']['systems']|safe}}; //var test is now assigned to getTest which will only work on browsers  
-
-    var latLngs = bounds.split(',');
-    var southWest = L.latLng(latLngs[1], latLngs[0]);
-    var northEast = L.latLng(latLngs[3], latLngs[2]);
-    var mb = L.latLngBounds(southWest, northEast);
+    let synthesis_id = "{{op['data']['synthesis_id']|safe}}"; //var test is now assigned to getTest which will only work on browsers  
+    const session_id = "{{op['data']['session_id']|safe}}";
+    const latLngs = bounds.split(',');
+    const southWest = L.latLng(latLngs[1], latLngs[0]);
+    const northEast = L.latLng(latLngs[3], latLngs[2]);
+    const mb = L.latLngBounds(southWest, northEast);
 
     // input nodes map
 
@@ -286,10 +287,10 @@
             const curFeatProps = curFeat['properties'];
             const curFeatSys = curFeatProps.sysname;
             const did = curFeatProps['diagramid'];
-            
-            let  srank = "";
+
+            let srank = "";
             let system_name = "";
-            let ranking =0;
+            let ranking = 0;
             if (selectedsystems.indexOf(curFeatSys) > -1) {
                 constraintedFeatures.features.push(curFeat);
 
@@ -308,8 +309,8 @@
                             }
                         }
                         srank = system_name + " " + ranking + " ";
-                        
-                         $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +'</td></tr>');
+
+                        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
 
                         break;
                     }
@@ -345,10 +346,13 @@
 
     // load Synthesis
     // load Wordlcoud
-    var wordcloud = {{op['data']['wordfreq']|safe}};
-    var fuzzyMatches = {{op['data']['fuzzymatches']|safe}};
-    var systems = {{op['data']['systems']|safe}};
+    var wordcloud = {{ op['data']['word_frequency']| safe}};
+    var fuzzy_matches = {{ op['data']['fuzzy_matches']| safe}};
+    var systems = {{ op['data']['systems']| safe}};
 
+    if (Object.keys(fuzzy_matches).length !== 0) {
+        render_fuzzy_matches(fuzzy_matches);
+    }
     WordCloud(document.getElementById('cloudcanvas'), {
         'list': wordcloud,
         'color': '#7b8a8a'
@@ -377,7 +381,7 @@
             }
         }
 
-        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] +'</td></tr>');
+        $('#diagTable > tbody:last-child').append('<tr><td>' + srank + '</td><td>' + did + '</td><td>' + curFeatProps['description'] + '</td><td>' + curFeatProps['fundingtype'] + '</td><td>' + curFeatProps['sysname'] + '</td></tr>');
 
     }
 
@@ -388,7 +392,7 @@
                 dataSrc: 'group'
             },
             "columnDefs": [{
-                "width":"10%",
+                "width": "10%",
                 "visible": false,
                 "targets": [1, 3],
 
@@ -424,7 +428,7 @@
         return table;
     }
 
-    var table = render_data_table();
+    const table = render_data_table();
     $('#diagTable tbody').on('click', 'tr', function () {
         var data = table.row(this).data();
         const diagramid = data[1];
@@ -438,171 +442,203 @@
             }
         }
     });
-    var graphData = {
-        "nodes": [],
-        "edges": []
-    };
 
-    for (var diagramid in fuzzyMatches) {
-        var links = fuzzyMatches[diagramid];
-        var desc = "";
-        var sysid = "";
-        var sysname = "";
-        var sysrank = "";
-        for (var i3 = diagrams.length - 1; i3 >= 0; i3--) {
-            var curDiagram = diagrams[i3];
-            if (curDiagram.id == diagramid) {
-                desc = curDiagram.worlddescription;
-                var sysid = curDiagram.sysid;
-                var ranking = curDiagram.rank;
-                for (var j3 = systems.length - 1; j3 >= 0; j3--) {
-                    var curSys = systems[j3];
-                    if (curSys.id === sysid) {
-                        sysname = curSys.name;
-                        syscolor = curSys.color;
-                        break;
+    function render_fuzzy_matches(fuzzy_matches) {
+        var graphData = {
+            "nodes": [],
+            "edges": []
+        };
+
+        for (var diagramid in fuzzy_matches) {
+            var links = fuzzy_matches[diagramid];
+            var desc = "";
+            var sysid = "";
+            var sysname = "";
+            var sysrank = "";
+            for (var i3 = diagrams.length - 1; i3 >= 0; i3--) {
+                var curDiagram = diagrams[i3];
+                if (curDiagram.id == diagramid) {
+                    desc = curDiagram.worlddescription;
+                    var sysid = curDiagram.sysid;
+                    var ranking = curDiagram.rank;
+                    for (var j3 = systems.length - 1; j3 >= 0; j3--) {
+                        var curSys = systems[j3];
+                        if (curSys.id === sysid) {
+                            sysname = curSys.name;
+                            syscolor = curSys.color;
+                            break;
+                        }
                     }
+                    sysrank = name + " " + ranking + " " + desc;
+                    break;
                 }
-                sysrank = name + " " + ranking + " " + desc;
-                break;
+            }
+
+            graphData.nodes.push({
+                "size": 0.001,
+                "id": diagramid,
+                "color": syscolor,
+                "label": sysrank,
+                "x": Math.random(),
+                "y": Math.random()
+            });
+            for (var k = links.length - 1; k >= 0; k--) {
+                var curLink = links[k];
+                if (curLink !== 0) {
+
+                    graphData.edges.push({
+                        "id": diagramid + "-" + curLink,
+                        "label": diagramid + "-" + curLink,
+                        "source": diagramid,
+                        "target": curLink,
+                        "size": 1,
+                        'color': '#ccc'
+                    });
+                }
             }
         }
 
-        graphData.nodes.push({
-            "size": 0.001,
-            "id": diagramid,
-            "color": syscolor,
-            "label": sysrank,
-            "x": Math.random(),
-            "y": Math.random()
+        // object with every neighbors of a node inside:
+        sigma.classes.graph.addMethod('neighbors', function (nodeId) {
+            var k, neighbors = {}, index = this.allNeighborsIndex[nodeId] || {};
+
+            for (k in index)
+                neighbors[k] = this.nodesIndex[k];
+
+            return neighbors;
         });
-        for (var k = links.length - 1; k >= 0; k--) {
-            var curLink = links[k];
-            if (curLink !== 0) {
 
-                graphData.edges.push({
-                    "id": diagramid + "-" + curLink,
-                    "label": diagramid + "-" + curLink,
-                    "source": diagramid,
-                    "target": curLink,
-                    "size": 1,
-                    'color': '#ccc'
-                });
+        s = new sigma({
+            renderers: [{
+                container: document.getElementById('graphcontainer'),
+                type: 'canvas' // sigma.renderers.canvas works as well
+            }],
+            graph: graphData,
+
+            settings: {
+                drawLabels: false,
+                labelSize: 'proportional',
+                defaultEdgeType: 'line',
+                enableHovering: true,
+                edgeColor: "default",
+                font: "Open Sans",
+                enableEdgeHovering: true,
+                edgeHoverColor: 'edge',
+                defaultEdgeHoverColor: '#000',
+                edgeHoverSizeRatio: 1,
+                edgeHoverExtremities: true
             }
-        }
+        });
+
+        // Add a method to the graph model that returns an
+
+        // We first need to save the original colors of our
+        // nodes and edges, like this:
+        s.graph.nodes().forEach(function (n) {
+            n.originalColor = n.color;
+        });
+        s.graph.edges().forEach(function (e) {
+            e.originalColor = e.color;
+        });
+
+        // When a node is clicked, we check for each node
+        // if it is a neighbor of the clicked one. If not,
+        // we set its color as grey, and else, it takes its
+        // original color.
+        // We do the same for the edges, and we only keep
+        // edges that have both extremities colored.
+        s.bind('clickNode', function (e) {
+            var nodeId = e.data.node.id,
+                toKeep = s.graph.neighbors(nodeId);
+            toKeep[nodeId] = e.data.node;
+
+            s.graph.nodes().forEach(function (n) {
+                if (toKeep[n.id])
+                    n.color = n.originalColor;
+                else
+                    n.color = '#eee';
+            });
+
+            s.graph.edges().forEach(function (e) {
+                if (toKeep[e.source] && toKeep[e.target])
+                    e.color = e.originalColor;
+                else
+                    e.color = '#eee';
+            });
+
+            // Since the data has been modified, we need to
+            // call the refresh method to make the colors
+            // update effective.
+            s.refresh();
+
+            keep_keys = Object.keys(toKeep).map(function (x) {
+                return parseInt(x, 10);
+            });
+
+            for (let index = 0; index < map_features_list.length; index++) {
+                const element = map_features_list[index];
+                if (keep_keys.includes(element.diagram_id)) { } else {
+                    element.layer.setStyle({
+                        'fillOpacity': 0.05,
+                        'opacity': 0.05
+                    });
+                }
+            }
+
+        });
+
+        // When the stage is clicked, we just color each
+        // node and edge with its original color.
+        s.bind('clickStage', function (e) {
+            s.graph.nodes().forEach(function (n) {
+                n.color = n.originalColor;
+            });
+
+            s.graph.edges().forEach(function (e) {
+                e.color = e.originalColor;
+            });
+
+            node_design_features.eachLayer(function (layer) {
+                layer.setStyle({
+                    'fillOpacity': 0.8,
+                    'opacity': 0.8
+                });
+            });
+
+            // Same as in the previous event:
+            s.refresh();
+        });
     }
 
-    // object with every neighbors of a node inside:
-    sigma.classes.graph.addMethod('neighbors', function (nodeId) {
-        var k,
-            neighbors = {},
-            index = this.allNeighborsIndex[nodeId] || {};
 
-        for (k in index)
-            neighbors[k] = this.nodesIndex[k];
+    document.addEventListener('DOMContentLoaded', () => {
 
-        return neighbors;
-    });
-
-    s = new sigma({
-        renderers: [{
-            container: document.getElementById('graphcontainer'),
-            type: 'canvas' // sigma.renderers.canvas works as well
-        }],
-        graph: graphData,
-
-        settings: {
-            drawLabels: false,
-            labelSize: 'proportional',
-            defaultEdgeType: 'line',
-            enableHovering: true,
-            edgeColor: "default",
-            font: "Open Sans",
-            enableEdgeHovering: true,
-            edgeHoverColor: 'edge',
-            defaultEdgeHoverColor: '#000',
-            edgeHoverSizeRatio: 1,
-            edgeHoverExtremities: true
-        }
-    });
-
-    // Add a method to the graph model that returns an
-
-    // We first need to save the original colors of our
-    // nodes and edges, like this:
-    s.graph.nodes().forEach(function (n) {
-        n.originalColor = n.color;
-    });
-    s.graph.edges().forEach(function (e) {
-        e.originalColor = e.color;
-    });
-
-    // When a node is clicked, we check for each node
-    // if it is a neighbor of the clicked one. If not,
-    // we set its color as grey, and else, it takes its
-    // original color.
-    // We do the same for the edges, and we only keep
-    // edges that have both extremities colored.
-    s.bind('clickNode', function (e) {
-        var nodeId = e.data.node.id,
-            toKeep = s.graph.neighbors(nodeId);
-        toKeep[nodeId] = e.data.node;
-
-        s.graph.nodes().forEach(function (n) {
-            if (toKeep[n.id])
-                n.color = n.originalColor;
-            else
-                n.color = '#eee';
-        });
-
-        s.graph.edges().forEach(function (e) {
-            if (toKeep[e.source] && toKeep[e.target])
-                e.color = e.originalColor;
-            else
-                e.color = '#eee';
-        });
-
-        // Since the data has been modified, we need to
-        // call the refresh method to make the colors
-        // update effective.
-        s.refresh();
-
-        keep_keys = Object.keys(toKeep).map(function (x) {
-            return parseInt(x, 10);
-        });
-
-        for (let index = 0; index < map_features_list.length; index++) {
-            const element = map_features_list[index];
-            if (keep_keys.includes(element.diagram_id)) {} else {
-                element.layer.setStyle({
-                    'fillOpacity': 0.05,
-                    'opacity': 0.05
-                });
+        const source = new EventSource("{{ url_for('sse.stream') }}");
+        source.addEventListener('sentence_similarity_complete', function (event) {
+            var data = JSON.parse(event.data);
+            let job_id = data['sentence_similarity_key'];
+            if (session_id === job_id) {
+                let similarity_data_url = window.location.origin + '/get_sentence_similarity?synthesis_id=' + synthesis_id;
+                get_sentence_similarity_data(similarity_data_url);
             }
-        }
+        }, false);
 
     });
 
-    // When the stage is clicked, we just color each
-    // node and edge with its original color.
-    s.bind('clickStage', function (e) {
-        s.graph.nodes().forEach(function (n) {
-            n.color = n.originalColor;
-        });
 
-        s.graph.edges().forEach(function (e) {
-            e.color = e.originalColor;
-        });
 
-        node_design_features.eachLayer(function (layer) {
-            layer.setStyle({
-                'fillOpacity': 0.8,
-                'opacity': 0.8
+    function get_sentence_similarity_data(similarity_data_url) {
+        fetch(similarity_data_url)
+            .then((response) => {
+                return response.json();
+            })
+            .then((fuzzy_matches) => {
+                render_fuzzy_matches(fuzzy_matches);
+            }).catch((error) => {
+                console.log(error);
             });
-        });
+    }
 
-        // Same as in the previous event:
-        s.refresh();
-    });
+
 </script>
 {% endif %} {% endblock %}
