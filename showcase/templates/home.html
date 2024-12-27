@@ -44,6 +44,14 @@
                 <br>
                 <small id="procstatus"></small>
             </div>
+            <div id ="mapControls"> 
+                <h4>Identify</h4>                               
+                  <div class="btn-group-toggle" data-toggle="buttons">
+                    <label class="btn btn-secondary active">
+                      <input id="popupControl" type="checkbox" checked data-toggle="toggle"> Show Diagram Names
+                    </label>
+                  </div>
+            </div>
 
         </div>
     </div>
@@ -198,11 +206,12 @@
     function onEachFeature(feature, layer) {
         // does this feature have a property named popupContent?
         map_features_list.push({
+            'grid_location':feature.properties.grid_location,
             'diagram_id': feature.properties.diagramid,
             'layer': layer
         });
         if (feature.properties && feature.properties.description) {
-            layer.bindPopup(feature.properties.description);
+            layer.bindPopup('<b>'+ feature.properties.grid_location+ '</b>');
         }
     }
 
@@ -232,11 +241,13 @@
     function onEachFeatureFilter(feature, layer) {
 
         design_map_features_list.push({
+            'grid_location':feature.properties.grid_location,
             'diagram_id': feature.properties.diagramid,
             'layer': layer
         });
         if (feature.properties && feature.properties.description) {
-            layer.bindPopup(feature.properties.description);
+            let popup_options = {"autoClose":false}
+            layer.bindPopup('<b>'+ feature.properties.grid_location+ '</b>', popup_options);
         }
     }
 
@@ -247,14 +258,22 @@
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://cartodb.com/attributions">CartoDB</a>',
         maxZoom: 18,
     }).addTo(inputmap_filter);
-    inputmap_filter.fitBounds(mb);
-
+    inputmap_filter.fitBounds(mb);    
     L.geoJSON(finaldesignJSON, {
         onEachFeature: onEachFeatureFilter,
         style: miniMapstyleComp,
     }).addTo(design_features);
 
-
+    function togglePopups(turnOff){
+        for (let index = 0; index < design_map_features_list.length; index++) {
+            const element = design_map_features_list[index];
+            if(turnOff){
+                element.layer.closePopup();
+            }else{
+                element.layer.openPopup();
+            }
+        }
+    }
 
     for (var x = 0; x < systems.length; x++) {
         $('#systemsCB').append('<input class="sysCB_ind" name="sysCB" id=' + "'" + systems[x].name + "'" +
@@ -428,7 +447,7 @@
         return table;
     }
 
-    const table = render_data_table();
+    let table = render_data_table();
     $('#diagTable tbody').on('click', 'tr', function () {
         var data = table.row(this).data();
         const diagramid = data[1];
@@ -622,6 +641,14 @@
                 get_sentence_similarity_data(similarity_data_url);
             }
         }, false);
+        $('#popupControl').change(function() {
+        if ($(this).prop('checked')){
+            togglePopups(false);
+            $('label[for="popupControl"]').text('Show diagrams');
+        } else {
+            togglePopups(true);
+            $('label[for="popupControl"]').text('Hide diagrams');
+        }});
 
     });
 
