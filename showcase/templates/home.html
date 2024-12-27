@@ -44,7 +44,7 @@
                 <br>
                 <small id="procstatus"></small>
             </div>
-            <div id ="mapControls"> 
+            <div id ="mapControls" class="pull-right"> 
                 <h4>Identify</h4>                               
                   <div class="btn-group-toggle" data-toggle="buttons">
                     <label class="btn btn-secondary active">
@@ -234,6 +234,7 @@
     var inputmap_filter = L.map('inputmap_filter', {
         minZoom: 6,
         maxZoom: 18,
+        fullscreenControl: true,
     });
 
     var design_map_features_list = [];
