@@ -403,6 +403,21 @@
 
 
 
+    document.addEventListener('DOMContentLoaded', () => {
+
+                
+        $('#popupControl').change(function() {
+        if ($(this).prop('checked')){
+            togglePopups(false);
+            $('label[for="popupControl"]').text('Show diagrams');
+        } else {
+            togglePopups(true);
+            $('label[for="popupControl"]').text('Hide diagrams');
+        }});
+
+});
+
+
 
 
 
