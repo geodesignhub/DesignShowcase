@@ -35,19 +35,6 @@ app, babel = create_app()
 app.logger.addHandler(InterceptHandler())
 
 
-@app.route("/get_sentence_similarity", methods=["GET"])
-def get_sentence_similarity():
-    synthesis_id = request.args.get("synthesis_id", "0")
-    
-    synthesis_key = "ss-" + synthesis_id
-    synthesis_exists = redis.exists(synthesis_key)
-    if synthesis_exists:
-        s = redis.get(synthesis_key)
-        sentence_similarity = json.loads(s)
-    else:
-        sentence_similarity = {}
-    print(sentence_similarity)
-    return Response(json.dumps(sentence_similarity), status=200, mimetype=MIMETYPE)
 
 
 @app.route("/", methods=["GET"])
@@ -158,26 +145,7 @@ def api_root():
 
             redis.set(bow_key, json.dumps(word_frequency))
 
-        key = "ss-" + synthesis_id
-        ss = redis.get(key)
 
-        if ss:
-            sentence_similarity = json.loads(ss)
-        else:
-            temporary_corpus_dictionary = my_bag_of_words_generator.get_ordered_corpus()
-            result = q.enqueue(
-                utils.create_sentence_similarity,
-                {
-                    "data": temporary_corpus_dictionary,
-                    "key": key,
-                    "session_id": session_id,
-                },
-                on_success=Callback(report_success),
-                on_failure=Callback(report_failure),
-                job_id=session_id,
-            )
-
-            sentence_similarity = {}
 
         design_data = {
             "synthesis_id": synthesis_id,
@@ -185,8 +153,7 @@ def api_root():
             "systems": systems,
             "synthesis": formatted_final_synthesis,
             "bounds": bounds,
-            "word_frequency": word_frequency,
-            "fuzzy_matches": sentence_similarity,
+            "word_frequency": word_frequency,            
             "diagrams": diagrams,
         }
         msg = {
